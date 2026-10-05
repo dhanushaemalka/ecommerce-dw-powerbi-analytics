@@ -1,0 +1,7 @@
+PaymentTypeKey,PaymentType,PaymentTypeGroup
+1,unknown,Other
+2,boleto,Bank slip
+3,credit_card,Card
+4,debit_card,Card
+5,not_defined,Other
+6,voucher,Voucher

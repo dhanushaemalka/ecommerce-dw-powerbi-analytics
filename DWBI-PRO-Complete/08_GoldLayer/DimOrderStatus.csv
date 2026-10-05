@@ -1,0 +1,9 @@
+OrderStatusKey,OrderStatus,IsDeliveredFlag,IsCancelledFlag
+1,approved,N,N
+2,canceled,N,Y
+3,created,N,N
+4,delivered,Y,N
+5,invoiced,N,N
+6,processing,N,N
+7,shipped,N,N
+8,unavailable,N,N
