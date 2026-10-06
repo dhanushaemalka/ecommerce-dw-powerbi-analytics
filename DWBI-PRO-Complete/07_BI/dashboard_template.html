@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Olist DWBI Executive Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8; --ok:#34d399; }
+  body { margin:0; font-family:Segoe UI,Arial,sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:24px 32px; border-bottom:1px solid #334155; }
+  h1 { margin:0; font-size:22px; }
+  .sub { color:var(--muted); margin-top:6px; }
+  .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; padding:20px 32px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; }
+  .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .value { font-size:24px; font-weight:700; margin-top:8px; color:var(--ok); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:0 32px 32px; }
+  canvas { max-height:320px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { padding:8px; border-bottom:1px solid #334155; text-align:left; }
+  @media (max-width: 1100px) { .kpis, .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Olist Brazilian E-commerce — Data Warehouse Dashboard</h1>
+  <div class="sub">SLIIT DWBI complete project · FactSales grain = order item · KPIs use delivered orders</div>
+</header>
+<section class="kpis">
+  <div class="card"><div class="label">Delivered revenue</div><div class="value">__REV__</div></div>
+  <div class="card"><div class="label">Delivered orders</div><div class="value">__ORD__</div></div>
+  <div class="card"><div class="label">On-time rate</div><div class="value">__ONT__</div></div>
+  <div class="card"><div class="label">Avg review</div><div class="value">__REVW__</div></div>
+  <div class="card"><div class="label">Avg delivery days</div><div class="value">__DAYS__</div></div>
+</section>
+<section class="grid">
+  <div class="card"><h3>Monthly revenue</h3><canvas id="cMonth"></canvas></div>
+  <div class="card"><h3>Top categories</h3><canvas id="cCat"></canvas></div>
+  <div class="card"><h3>Payment mix</h3><canvas id="cPay"></canvas></div>
+  <div class="card"><h3>Revenue by region</h3><canvas id="cReg"></canvas></div>
+  <div class="card" style="grid-column:1/-1">
+    <h3>Categories with slowest on-time delivery (min 200 items)</h3>
+    <table id="slow"></table>
+  </div>
+</section>
+<script>
+const M = __METRICS__;
+const dark = {plugins:{legend:{labels:{color:'#e2e8f0'}}}};
+new Chart(document.getElementById('cMonth'), { type:'line', data:{
+  labels: M.monthly.map(r => r.YearMonth),
+  datasets:[{ label:'Revenue', data:M.monthly.map(r => r.Revenue), borderColor:'#38bdf8', tension:.3, fill:false }]
+}, options: dark });
+new Chart(document.getElementById('cCat'), { type:'bar', data:{
+  labels: M.top_categories.map(r => r.CategoryNameEnglish),
+  datasets:[{ label:'Revenue', data:M.top_categories.map(r => r.Revenue), backgroundColor:'#34d399' }]
+}, options: Object.assign({indexAxis:'y'}, dark) });
+new Chart(document.getElementById('cPay'), { type:'doughnut', data:{
+  labels: M.payment_mix.map(r => r.PaymentType),
+  datasets:[{ data:M.payment_mix.map(r => r.PaymentValue) }]
+}, options: dark });
+new Chart(document.getElementById('cReg'), { type:'bar', data:{
+  labels: M.region.map(r => r.CustomerRegion),
+  datasets:[{ label:'Revenue', data:M.region.map(r => r.Revenue), backgroundColor:'#fbbf24' }]
+}, options: dark });
+const tb = document.getElementById('slow');
+tb.innerHTML = '<tr><th>Category</th><th>On-time %</th><th>Avg days</th><th>Avg review</th><th>Revenue</th></tr>' +
+  M.kpi_slowest_categories.map(r => '<tr><td>'+r.CategoryNameEnglish+'</td><td>'+r.OnTimePct.toFixed(1)+'</td><td>'+r.AvgDeliveryDays.toFixed(1)+'</td><td>'+r.AvgReview.toFixed(2)+'</td><td>'+r.Revenue.toFixed(0)+'</td></tr>').join('');
+</script>
+</body>
+</html>

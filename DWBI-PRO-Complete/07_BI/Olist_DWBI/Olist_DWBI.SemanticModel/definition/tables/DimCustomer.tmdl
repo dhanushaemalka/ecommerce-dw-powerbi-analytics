@@ -1,0 +1,65 @@
+table DimCustomer
+	lineageTag: 244e7459-5501-4cf1-9f3b-9a3b64bb36c5
+
+	column CustomerKey
+		dataType: int64
+		isHidden
+		lineageTag: 2aa656e9-cc33-4db3-9287-719005b3ee58
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+	column CustomerID
+		dataType: string
+		lineageTag: 2af71d41-4f7f-498c-9f26-4a45f3ff99a3
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+	column CustomerUniqueID
+		dataType: string
+		lineageTag: d4bbb0c3-6da2-4333-bfb4-0faca5fba17f
+		summarizeBy: none
+		sourceColumn: CustomerUniqueID
+
+	column CustomerCity
+		dataType: string
+		lineageTag: f60dadca-087a-4f56-9de8-51ef5dbd3dc1
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: CustomerCity
+
+	column CustomerState
+		dataType: string
+		lineageTag: e1280370-7bd8-4428-835b-1b7ee8d702fb
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: CustomerState
+
+	column CustomerRegion
+		dataType: string
+		lineageTag: ebb7d193-4e20-4d8b-b7eb-81a0f90944f1
+		summarizeBy: none
+		sourceColumn: CustomerRegion
+
+	column CustomerZipPrefix
+		dataType: int64
+		lineageTag: db5aead4-659c-4c24-a458-94b6e39152f9
+		summarizeBy: none
+		sourceColumn: CustomerZipPrefix
+
+	column IsUnknown
+		dataType: int64
+		isHidden
+		lineageTag: 5893eace-2ad9-4cbb-a15c-d79a89c83f9e
+		summarizeBy: none
+		sourceColumn: IsUnknown
+
+	partition DimCustomer = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/DimCustomer.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"CustomerKey", Int64.Type}, {"CustomerID", type text}, {"CustomerUniqueID", type text}, {"CustomerCity", type text}, {"CustomerState", type text}, {"CustomerRegion", type text}, {"CustomerZipPrefix", Int64.Type}, {"IsUnknown", Int64.Type}})
+					in
+					    ChangedType
+

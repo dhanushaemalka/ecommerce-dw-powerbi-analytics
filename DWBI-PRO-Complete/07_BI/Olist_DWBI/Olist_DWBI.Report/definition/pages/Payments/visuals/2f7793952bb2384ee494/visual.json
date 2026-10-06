@@ -1,0 +1,66 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "2f7793952bb2384ee494",
+  "position": {
+    "x": 532,
+    "y": 436,
+    "z": 402,
+    "height": 260,
+    "width": 732,
+    "tabOrder": 402
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPayment"
+                    }
+                  },
+                  "Property": "Payment Value"
+                }
+              },
+              "queryRef": "FactPayment.Payment Value",
+              "nativeQueryRef": "Payment Value"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPayment"
+                    }
+                  },
+                  "Property": "Payment Count"
+                }
+              },
+              "queryRef": "FactPayment.Payment Count",
+              "nativeQueryRef": "Payment Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPayment"
+                    }
+                  },
+                  "Property": "Avg Installments"
+                }
+              },
+              "queryRef": "FactPayment.Avg Installments",
+              "nativeQueryRef": "Avg Installments"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

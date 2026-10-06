@@ -1,0 +1,38 @@
+table DimOrderStatus
+	lineageTag: 51d4ced2-39ee-43de-9b88-42c3683da9fd
+
+	column OrderStatusKey
+		dataType: int64
+		isHidden
+		lineageTag: 0773eb91-1a1f-41b0-817f-c17e6d96ddf3
+		summarizeBy: none
+		sourceColumn: OrderStatusKey
+
+	column OrderStatus
+		dataType: string
+		lineageTag: ad2212a1-a2ad-4caa-bd22-15feb55ae95b
+		summarizeBy: none
+		sourceColumn: OrderStatus
+
+	column IsDeliveredFlag
+		dataType: string
+		lineageTag: afb51b48-458a-49e3-bc7b-5d98baa45084
+		summarizeBy: none
+		sourceColumn: IsDeliveredFlag
+
+	column IsCancelledFlag
+		dataType: string
+		lineageTag: e1c0306b-e8ff-47c8-9978-a2d0b1a4c454
+		summarizeBy: none
+		sourceColumn: IsCancelledFlag
+
+	partition DimOrderStatus = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/DimOrderStatus.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"OrderStatusKey", Int64.Type}, {"OrderStatus", type text}, {"IsDeliveredFlag", type text}, {"IsCancelledFlag", type text}})
+					in
+					    ChangedType
+

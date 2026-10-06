@@ -1,0 +1,81 @@
+table DimProduct
+	lineageTag: fa715fc3-4647-4b17-a1fa-d2e77f239a23
+
+	column ProductKey
+		dataType: int64
+		isHidden
+		lineageTag: 707499b4-6de6-4d20-a767-d29fc92c3916
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+	column ProductID
+		dataType: string
+		lineageTag: a93852b0-c698-4719-8de6-76b6008e5175
+		summarizeBy: none
+		sourceColumn: ProductID
+
+	column CategoryNamePortuguese
+		dataType: string
+		lineageTag: 346c8ce2-19ff-49f0-8137-6fb151684f37
+		summarizeBy: none
+		sourceColumn: CategoryNamePortuguese
+
+	column CategoryNameEnglish
+		dataType: string
+		lineageTag: f28091cf-299f-4bf3-8133-682351f26d0a
+		summarizeBy: none
+		sourceColumn: CategoryNameEnglish
+
+	column WeightG
+		dataType: double
+		lineageTag: 13ffa0f0-220a-41b3-a4b8-ae218ecbbb6c
+		summarizeBy: none
+		sourceColumn: WeightG
+
+	column LengthCm
+		dataType: double
+		lineageTag: 6999e603-ddc7-47be-a1db-64a8bacb9c00
+		summarizeBy: none
+		sourceColumn: LengthCm
+
+	column HeightCm
+		dataType: double
+		lineageTag: 272cc0f9-3240-4df1-b1a0-16bd7f74f237
+		summarizeBy: none
+		sourceColumn: HeightCm
+
+	column WidthCm
+		dataType: double
+		lineageTag: 4d26ac83-0111-4300-9249-2277f2be68f7
+		summarizeBy: none
+		sourceColumn: WidthCm
+
+	column PhotosQty
+		dataType: int64
+		lineageTag: 0f45aa75-8d9d-49e1-ac8a-49c8521ca0d5
+		summarizeBy: none
+		sourceColumn: PhotosQty
+
+	column WeightClass
+		dataType: string
+		lineageTag: a843528d-8c93-42b0-9d53-a7641908cf32
+		summarizeBy: none
+		sourceColumn: WeightClass
+
+	column IsUnknown
+		dataType: int64
+		isHidden
+		lineageTag: 94cb9d1e-fab5-4061-aaf9-69b35650f7a0
+		summarizeBy: none
+		sourceColumn: IsUnknown
+
+	partition DimProduct = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/DimProduct.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"ProductKey", Int64.Type}, {"ProductID", type text}, {"CategoryNamePortuguese", type text}, {"CategoryNameEnglish", type text}, {"WeightG", type number}, {"LengthCm", type number}, {"HeightCm", type number}, {"WidthCm", type number}, {"PhotosQty", Int64.Type}, {"WeightClass", type text}, {"IsUnknown", Int64.Type}})
+					in
+					    ChangedType
+

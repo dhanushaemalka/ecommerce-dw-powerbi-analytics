@@ -1,0 +1,32 @@
+table DimPaymentType
+	lineageTag: 15cee240-6084-442f-ae2a-2434766ceceb
+
+	column PaymentTypeKey
+		dataType: int64
+		isHidden
+		lineageTag: ea719525-2ba5-4f2c-bbe6-ff14ad8b1cb1
+		summarizeBy: none
+		sourceColumn: PaymentTypeKey
+
+	column PaymentType
+		dataType: string
+		lineageTag: b1029579-235c-401a-888c-2003669caf1e
+		summarizeBy: none
+		sourceColumn: PaymentType
+
+	column PaymentTypeGroup
+		dataType: string
+		lineageTag: 1dfe1ba2-e73f-4f23-92bd-f0d4f69b8e47
+		summarizeBy: none
+		sourceColumn: PaymentTypeGroup
+
+	partition DimPaymentType = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/DimPaymentType.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"PaymentTypeKey", Int64.Type}, {"PaymentType", type text}, {"PaymentTypeGroup", type text}})
+					in
+					    ChangedType
+

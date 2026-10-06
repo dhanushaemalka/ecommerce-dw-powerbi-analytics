@@ -1,0 +1,232 @@
+table FactSales
+	lineageTag: 2f51b0f6-c70a-4cde-9077-ce3530f55a49
+
+	/// Gross merchandise value from line totals
+	measure Revenue = SUM ( FactSales[LineTotal] )
+		formatString: $#,##0
+		lineageTag: df182c87-6425-45fb-bf98-5aa9aa58c547
+
+	/// Units sold
+	measure 'Items Sold' = SUM ( FactSales[Quantity] )
+		formatString: #,##0
+		lineageTag: 438d7d8c-bc8c-4108-b71a-27173de3dbc8
+
+	/// Distinct orders
+	measure 'Order Count' = DISTINCTCOUNT ( FactSales[OrderID] )
+		formatString: #,##0
+		lineageTag: 0a18c008-f6ce-4e4e-9360-7686ba54a2ec
+
+	/// Average order value
+	measure AOV = DIVIDE ( [Revenue], [Order Count] )
+		formatString: $#,##0
+		lineageTag: dd696732-27cc-49c1-a080-dcbffcf09d68
+
+	/// Mean review score
+	measure 'Avg Review' = AVERAGE ( FactSales[ReviewScore] )
+		formatString: 0.00
+		lineageTag: 0b076544-4202-4c9c-afdb-7014dc55d40c
+
+	/// Mean days to customer
+	measure 'Avg Delivery Days' = AVERAGE ( FactSales[DeliveryDays] )
+		formatString: 0.0
+		lineageTag: cbee8986-69ae-46fd-b044-22b229f76d29
+
+	/// Items delivered on or before estimate
+	measure 'On Time Items' = CALCULATE ( [Items Sold], FactSales[OnTimeFlag] = "Y" )
+		formatString: #,##0
+		lineageTag: 50cc8307-bac6-441f-a308-0abe4e64032c
+
+	/// Share of on-time items
+	measure 'On Time Rate' = DIVIDE ( [On Time Items], [Items Sold] )
+		formatString: 0.0%
+		lineageTag: d64a2a01-5c53-4e83-b969-e712c16b7855
+
+	/// Freight as share of GMV
+	measure 'Freight Ratio' = DIVIDE ( SUM ( FactSales[FreightValue] ), [Revenue] )
+		formatString: 0.0%
+		lineageTag: d359242f-63cf-4634-a8b1-4e3ab8eb24d1
+
+	/// Year-over-year revenue change
+	measure 'YoY Revenue' =
+			VAR Prev =
+			    CALCULATE ( [Revenue], DATEADD ( DimDate[FullDate], -1, YEAR ) )
+			RETURN
+			    DIVIDE ( [Revenue] - Prev, Prev )
+		formatString: 0.0%
+		lineageTag: 9beb08fa-bc7c-422c-8f4b-e6225a5cf7ea
+
+	/// Revenue from delivered orders
+	measure 'Delivered Revenue' = CALCULATE ( [Revenue], DimOrderStatus[IsDeliveredFlag] = "Y" )
+		formatString: $#,##0
+		lineageTag: 708a8e66-0633-40a6-b2f8-94ea23cce4a4
+
+	/// Distinct delivered orders
+	measure 'Delivered Orders' = CALCULATE ( [Order Count], DimOrderStatus[IsDeliveredFlag] = "Y" )
+		formatString: #,##0
+		lineageTag: 7449b7c7-324b-48ee-a56a-015831a3e7c7
+
+	/// Revenue on public holidays
+	measure 'Holiday Revenue' = CALCULATE ( [Revenue], DimDate[IsHoliday] = 1 )
+		formatString: $#,##0
+		lineageTag: cd79c4ee-4f90-4020-ba8c-c1e6334051d9
+
+	/// Items with review below 3
+	measure 'Bad Review Items' = CALCULATE ( [Items Sold], FactSales[ReviewScore] < 3 )
+		formatString: #,##0
+		lineageTag: 0264c741-8d19-48ae-a6c0-c10af54010ab
+
+	/// Share of poor reviews
+	measure 'Bad Review Rate' = DIVIDE ( [Bad Review Items], [Items Sold] )
+		formatString: 0.0%
+		lineageTag: 359c0656-8907-4856-8d92-1c41f8e99984
+
+	column SalesKey
+		dataType: int64
+		isHidden
+		lineageTag: 63236595-6946-4e69-b3b7-1afabd7a9ac8
+		summarizeBy: none
+		sourceColumn: SalesKey
+
+	column PurchaseDateKey
+		dataType: int64
+		isHidden
+		lineageTag: aa72ef8d-eca5-4354-8c26-a7ae77d34be8
+		summarizeBy: none
+		sourceColumn: PurchaseDateKey
+
+	column DeliveredDateKey
+		dataType: int64
+		isHidden
+		lineageTag: ceb70a7d-309d-4b6f-847e-d8d44c6c9fc6
+		summarizeBy: none
+		sourceColumn: DeliveredDateKey
+
+	column EstimatedDeliveryDateKey
+		dataType: int64
+		isHidden
+		lineageTag: c21d2035-7614-4a29-832a-c291dff98e54
+		summarizeBy: none
+		sourceColumn: EstimatedDeliveryDateKey
+
+	column CustomerKey
+		dataType: int64
+		isHidden
+		lineageTag: ce216c43-1953-456c-ad9d-579ef6f7de13
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+	column ProductKey
+		dataType: int64
+		isHidden
+		lineageTag: f3bc009d-2f77-461c-a2e6-471826a28578
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+	column SellerKey
+		dataType: int64
+		isHidden
+		lineageTag: 60b25b31-51b0-48cc-9846-bd4cfda475ef
+		summarizeBy: none
+		sourceColumn: SellerKey
+
+	column CustomerGeoKey
+		dataType: int64
+		isHidden
+		lineageTag: 67b977d3-48aa-45ce-95a4-e18b5fe9398b
+		summarizeBy: none
+		sourceColumn: CustomerGeoKey
+
+	column PaymentTypeKey
+		dataType: int64
+		isHidden
+		lineageTag: 53541f49-8d6f-4fdb-9377-8908d8e88e5b
+		summarizeBy: none
+		sourceColumn: PaymentTypeKey
+
+	column OrderStatusKey
+		dataType: int64
+		isHidden
+		lineageTag: d54ce5c1-feac-4316-a829-a24c42e4402a
+		summarizeBy: none
+		sourceColumn: OrderStatusKey
+
+	column OrderID
+		dataType: string
+		lineageTag: 8dd1ae0b-0aff-4149-b3e9-97c7ffe8ebfa
+		summarizeBy: none
+		sourceColumn: OrderID
+
+	column OrderItemID
+		dataType: int64
+		isHidden
+		lineageTag: 6049c79e-8452-4835-a55d-952b362c4e4c
+		summarizeBy: none
+		sourceColumn: OrderItemID
+
+	column Price
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 31575c5f-e360-4c96-b437-b88bb63b868a
+		summarizeBy: sum
+		sourceColumn: Price
+
+		annotation SummarizationSetBy = Automatic
+
+	column FreightValue
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 6ee02742-4902-4820-83a5-2390d4314537
+		summarizeBy: sum
+		sourceColumn: FreightValue
+
+		annotation SummarizationSetBy = Automatic
+
+	column LineTotal
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 84dd4a19-5a84-4cf3-b91e-b9fc6b7368ba
+		summarizeBy: sum
+		sourceColumn: LineTotal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		lineageTag: 5b15a462-0189-48b1-ade9-0ad4e3035356
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+	column DeliveryDays
+		dataType: double
+		lineageTag: 1d477874-23a1-48f6-ad87-84cf631e040b
+		summarizeBy: none
+		sourceColumn: DeliveryDays
+
+	column DelayDays
+		dataType: double
+		lineageTag: 5605ce49-1ed8-45e8-874b-b22e4d625dbe
+		summarizeBy: none
+		sourceColumn: DelayDays
+
+	column OnTimeFlag
+		dataType: string
+		lineageTag: e41e1250-9e85-49b2-9f28-dbc2db1c83f6
+		summarizeBy: none
+		sourceColumn: OnTimeFlag
+
+	column ReviewScore
+		dataType: double
+		lineageTag: e4133935-4e4c-4c5b-9985-5090f8de633a
+		summarizeBy: none
+		sourceColumn: ReviewScore
+
+	partition FactSales = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/FactSales.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"SalesKey", Int64.Type}, {"PurchaseDateKey", Int64.Type}, {"DeliveredDateKey", Int64.Type}, {"EstimatedDeliveryDateKey", Int64.Type}, {"CustomerKey", Int64.Type}, {"ProductKey", Int64.Type}, {"SellerKey", Int64.Type}, {"CustomerGeoKey", Int64.Type}, {"PaymentTypeKey", Int64.Type}, {"OrderStatusKey", Int64.Type}, {"OrderID", type text}, {"OrderItemID", Int64.Type}, {"Price", type number}, {"FreightValue", type number}, {"LineTotal", type number}, {"Quantity", Int64.Type}, {"DeliveryDays", type number}, {"DelayDays", type number}, {"OnTimeFlag", type text}, {"ReviewScore", type number}})
+					in
+					    ChangedType
+

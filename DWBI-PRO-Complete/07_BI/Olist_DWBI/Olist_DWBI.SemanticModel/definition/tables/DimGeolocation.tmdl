@@ -1,0 +1,60 @@
+table DimGeolocation
+	lineageTag: 656ebca3-ab12-4eea-a462-4148d9cf4aa1
+
+	column GeoKey
+		dataType: int64
+		isHidden
+		lineageTag: ea0aa529-f5de-49c7-9e93-8b5e27476022
+		summarizeBy: none
+		sourceColumn: GeoKey
+
+	column ZipPrefix
+		dataType: int64
+		lineageTag: eebc676b-8e14-4e6d-9967-ff856adabbb7
+		summarizeBy: none
+		sourceColumn: ZipPrefix
+
+	column City
+		dataType: string
+		lineageTag: ec6d39bc-3050-462d-abb7-0d5c843bfc34
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: City
+
+	column State
+		dataType: string
+		lineageTag: 67e0db7c-62ff-43a9-ad46-635375750de4
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: State
+
+	column Latitude
+		dataType: double
+		lineageTag: ebc55251-5bed-4076-b2a5-abaa15925a27
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: Latitude
+
+	column Longitude
+		dataType: double
+		lineageTag: 2538cd29-65c5-4510-b424-524bd4056222
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: Longitude
+
+	column Region
+		dataType: string
+		lineageTag: 9906b5d3-bce0-4905-91ec-c3217c1c84c7
+		summarizeBy: none
+		sourceColumn: Region
+
+	partition DimGeolocation = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/DimGeolocation.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"GeoKey", Int64.Type}, {"ZipPrefix", Int64.Type}, {"City", type text}, {"State", type text}, {"Latitude", type number}, {"Longitude", type number}, {"Region", type text}})
+					in
+					    ChangedType
+

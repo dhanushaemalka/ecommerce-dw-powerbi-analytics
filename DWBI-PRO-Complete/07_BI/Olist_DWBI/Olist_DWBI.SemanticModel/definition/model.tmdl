@@ -1,0 +1,27 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_ProTooling = ["DevMode"]
+
+annotation PBI_QueryOrder = ["FactSales","FactPayment","DimDate","DimCustomer","DimProduct","DimSeller","DimGeolocation","DimPaymentType","DimOrderStatus","GoldFolder"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+ref table FactSales
+ref table FactPayment
+ref table DimDate
+ref table DimCustomer
+ref table DimProduct
+ref table DimSeller
+ref table DimGeolocation
+ref table DimPaymentType
+ref table DimOrderStatus
+ref table DateTableTemplate_b362c76e-b8d4-4868-83cc-ff7e7a8980ae
+ref table LocalDateTable_ec6c7349-d9c4-49e5-9c87-5a4fb59ebd91
+

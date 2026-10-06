@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Olist DWBI Executive Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8; --ok:#34d399; }
+  body { margin:0; font-family:Segoe UI,Arial,sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:24px 32px; border-bottom:1px solid #334155; }
+  h1 { margin:0; font-size:22px; }
+  .sub { color:var(--muted); margin-top:6px; }
+  .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; padding:20px 32px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; }
+  .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .value { font-size:24px; font-weight:700; margin-top:8px; color:var(--ok); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:0 32px 32px; }
+  canvas { max-height:320px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { padding:8px; border-bottom:1px solid #334155; text-align:left; }
+  @media (max-width: 1100px) { .kpis, .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Olist Brazilian E-commerce — Data Warehouse Dashboard</h1>
+  <div class="sub">SLIIT DWBI complete project · FactSales grain = order item · KPIs use delivered orders</div>
+</header>
+<section class="kpis">
+  <div class="card"><div class="label">Delivered revenue</div><div class="value">R$ 15,419,774</div></div>
+  <div class="card"><div class="label">Delivered orders</div><div class="value">96,478</div></div>
+  <div class="card"><div class="label">On-time rate</div><div class="value">93.4%</div></div>
+  <div class="card"><div class="label">Avg review</div><div class="value">4.08 / 5</div></div>
+  <div class="card"><div class="label">Avg delivery days</div><div class="value">12.0</div></div>
+</section>
+<section class="grid">
+  <div class="card"><h3>Monthly revenue</h3><canvas id="cMonth"></canvas></div>
+  <div class="card"><h3>Top categories</h3><canvas id="cCat"></canvas></div>
+  <div class="card"><h3>Payment mix</h3><canvas id="cPay"></canvas></div>
+  <div class="card"><h3>Revenue by region</h3><canvas id="cReg"></canvas></div>
+  <div class="card" style="grid-column:1/-1">
+    <h3>Categories with slowest on-time delivery (min 200 items)</h3>
+    <table id="slow"></table>
+  </div>
+</section>
+<script>
+const M = {"kpis": {"fact_sales_rows": 112650, "fact_payment_rows": 103886, "dim_customer_rows": 99442, "dim_product_rows": 32952, "dim_seller_rows": 3096, "dim_date_rows": 1097, "unknown_customer_facts": 0, "unknown_product_facts": 0, "unknown_seller_facts": 0, "total_revenue_delivered": 15419773.75, "total_orders_delivered": 96478, "avg_review": 4.0820441315412515, "ontime_rate": 93.40769042281897, "avg_delivery_days": 12.007341930682736}, "monthly": [{"YearMonth": "2016-09", "Revenue": 143.46, "Orders": 1}, {"YearMonth": "2016-10", "Revenue": 46490.66, "Orders": 265}, {"YearMonth": "2016-12", "Revenue": 19.62, "Orders": 1}, {"YearMonth": "2017-01", "Revenue": 127482.37, "Orders": 750}, {"YearMonth": "2017-02", "Revenue": 271239.32, "Orders": 1653}, {"YearMonth": "2017-03", "Revenue": 414330.95, "Orders": 2546}, {"YearMonth": "2017-04", "Revenue": 390812.4, "Orders": 2303}, {"YearMonth": "2017-05", "Revenue": 566851.4, "Orders": 3546}, {"YearMonth": "2017-06", "Revenue": 490050.37, "Orders": 3135}, {"YearMonth": "2017-07", "Revenue": 566299.08, "Orders": 3872}, {"YearMonth": "2017-08", "Revenue": 645832.36, "Orders": 4193}, {"YearMonth": "2017-09", "Revenue": 701077.49, "Orders": 4150}, {"YearMonth": "2017-10", "Revenue": 751117.01, "Orders": 4478}, {"YearMonth": "2017-11", "Revenue": 1153364.2, "Orders": 7289}, {"YearMonth": "2017-12", "Revenue": 843078.29, "Orders": 5513}, {"YearMonth": "2018-01", "Revenue": 1077887.46, "Orders": 7069}, {"YearMonth": "2018-02", "Revenue": 966168.41, "Orders": 6555}, {"YearMonth": "2018-03", "Revenue": 1120598.24, "Orders": 7003}, {"YearMonth": "2018-04", "Revenue": 1132878.93, "Orders": 6798}, {"YearMonth": "2018-05", "Revenue": 1128774.52, "Orders": 6749}, {"YearMonth": "2018-06", "Revenue": 1011978.29, "Orders": 6099}, {"YearMonth": "2018-07", "Revenue": 1027807.28, "Orders": 6159}, {"YearMonth": "2018-08", "Revenue": 985491.64, "Orders": 6351}], "top_categories": [{"CategoryNameEnglish": "health_beauty", "Revenue": 1412089.53, "Orders": 8647, "AvgReview": 4.189729135644899}, {"CategoryNameEnglish": "watches_gifts", "Revenue": 1264333.12, "Orders": 5495, "AvgReview": 4.071711092003439}, {"CategoryNameEnglish": "bed_bath_table", "Revenue": 1225209.26, "Orders": 9272, "AvgReview": 3.923968239313083}, {"CategoryNameEnglish": "sports_leisure", "Revenue": 1118256.91, "Orders": 7530, "AvgReview": 4.165492957746479}, {"CategoryNameEnglish": "computers_accessories", "Revenue": 1032723.77, "Orders": 6530, "AvgReview": 3.986461619348055}, {"CategoryNameEnglish": "furniture_decor", "Revenue": 880329.92, "Orders": 6307, "AvgReview": 3.9537747524752476}, {"CategoryNameEnglish": "housewares", "Revenue": 758392.25, "Orders": 5743, "AvgReview": 4.107904085257549}, {"CategoryNameEnglish": "cool_stuff", "Revenue": 691680.89, "Orders": 3559, "AvgReview": 4.194903767958796}, {"CategoryNameEnglish": "auto", "Revenue": 669454.75, "Orders": 3810, "AvgReview": 4.116003903391071}, {"CategoryNameEnglish": "garden_tools", "Revenue": 567145.68, "Orders": 3448, "AvgReview": 4.084316037735849}], "payment_mix": [{"PaymentType": "credit_card", "PaymentValue": 12542084.19, "Txn": 76505}, {"PaymentType": "boleto", "PaymentValue": 2869361.27, "Txn": 19784}, {"PaymentType": "voucher", "PaymentValue": 379436.87, "Txn": 3866}, {"PaymentType": "debit_card", "PaymentValue": 217989.79, "Txn": 1528}, {"PaymentType": "not_defined", "PaymentValue": 0.0, "Txn": 3}], "region": [{"CustomerRegion": "Southeast", "Revenue": 9961654.32, "Orders": 66200, "AvgReview": 4.107179289300477}, {"CustomerRegion": "South", "Revenue": 2238309.37, "Orders": 13814, "AvgReview": 4.09989241868118}, {"CustomerRegion": "Northeast", "Revenue": 1822543.32, "Orders": 9044, "AvgReview": 3.910476856942917}, {"CustomerRegion": "Center-West", "Revenue": 995927.67, "Orders": 5624, "AvgReview": 4.04489477786438}, {"CustomerRegion": "North", "Revenue": 401339.07, "Orders": 1796, "AvgReview": 3.9734202607823472}], "rollup": [{"YearNumber": 2016, "QuarterName": "Q3", "Revenue": 143.46, "Items": 3, "Orders": 1}, {"YearNumber": 2016, "QuarterName": "Q4", "Revenue": 46510.28, "Items": 314, "Orders": 266}, {"YearNumber": 2017, "QuarterName": "Q1", "Revenue": 813052.64, "Items": 5668, "Orders": 4949}, {"YearNumber": 2017, "QuarterName": "Q2", "Revenue": 1447714.17, "Items": 10062, "Orders": 8984}, {"YearNumber": 2017, "QuarterName": "Q3", "Revenue": 1913208.93, "Items": 13950, "Orders": 12215}, {"YearNumber": 2017, "QuarterName": "Q4", "Revenue": 2747559.5, "Items": 19876, "Orders": 17280}, {"YearNumber": 2018, "QuarterName": "Q1", "Revenue": 3164654.11, "Items": 23572, "Orders": 20627}, {"YearNumber": 2018, "QuarterName": "Q2", "Revenue": 3273631.74, "Items": 22647, "Orders": 19646}, {"YearNumber": 2018, "QuarterName": "Q3", "Revenue": 2013298.92, "Items": 14105, "Orders": 12510}], "holiday": [{"IsHoliday": 0, "Orders": 95878, "Revenue": 15415833.48, "AvgReview": 4.035173827897183}, {"IsHoliday": 1, "Orders": 2788, "Revenue": 427719.76, "AvgReview": 3.9617854849068723}], "kpi_slowest_categories": [{"CategoryNameEnglish": "audio", "Items": 362, "OnTimePct": 88.39779005524862, "AvgDeliveryDays": 12.883977900552486, "AvgReview": 3.8365921787709496, "Revenue": 56255.32}, {"CategoryNameEnglish": "home_confort", "Items": 429, "OnTimePct": 90.67599067599068, "AvgDeliveryDays": 13.039627039627039, "AvgReview": 3.8548009367681497, "Revenue": 66438.22}, {"CategoryNameEnglish": "books_technical", "Items": 263, "OnTimePct": 92.01520912547528, "AvgDeliveryDays": 10.2319391634981, "AvgReview": 4.3893129770992365, "Revenue": 22901.07}, {"CategoryNameEnglish": "office_furniture", "Items": 1668, "OnTimePct": 92.0263788968825, "AvgDeliveryDays": 20.386690647482013, "AvgReview": 3.5133010882708584, "Revenue": 335211.36}, {"CategoryNameEnglish": "baby", "Items": 2982, "OnTimePct": 92.32059020791415, "AvgDeliveryDays": 12.056338028169014, "AvgReview": 4.0782358905035485, "Revenue": 466727.65}, {"CategoryNameEnglish": "electronics", "Items": 2729, "OnTimePct": 92.41480395749359, "AvgDeliveryDays": 12.424697691462073, "AvgReview": 4.067158671586716, "Revenue": 200723.09}, {"CategoryNameEnglish": "health_beauty", "Items": 9465, "OnTimePct": 92.43528790279979, "AvgDeliveryDays": 11.515478077126255, "AvgReview": 4.189729135644899, "Revenue": 1412089.53}, {"CategoryNameEnglish": "Other", "Items": 1537, "OnTimePct": 92.51789199739753, "AvgDeliveryDays": 12.314899154196487, "AvgReview": 3.9386885245901637, "Revenue": 197695.69}]};
+const dark = {plugins:{legend:{labels:{color:'#e2e8f0'}}}};
+new Chart(document.getElementById('cMonth'), { type:'line', data:{
+  labels: M.monthly.map(r => r.YearMonth),
+  datasets:[{ label:'Revenue', data:M.monthly.map(r => r.Revenue), borderColor:'#38bdf8', tension:.3, fill:false }]
+}, options: dark });
+new Chart(document.getElementById('cCat'), { type:'bar', data:{
+  labels: M.top_categories.map(r => r.CategoryNameEnglish),
+  datasets:[{ label:'Revenue', data:M.top_categories.map(r => r.Revenue), backgroundColor:'#34d399' }]
+}, options: Object.assign({indexAxis:'y'}, dark) });
+new Chart(document.getElementById('cPay'), { type:'doughnut', data:{
+  labels: M.payment_mix.map(r => r.PaymentType),
+  datasets:[{ data:M.payment_mix.map(r => r.PaymentValue) }]
+}, options: dark });
+new Chart(document.getElementById('cReg'), { type:'bar', data:{
+  labels: M.region.map(r => r.CustomerRegion),
+  datasets:[{ label:'Revenue', data:M.region.map(r => r.Revenue), backgroundColor:'#fbbf24' }]
+}, options: dark });
+const tb = document.getElementById('slow');
+tb.innerHTML = '<tr><th>Category</th><th>On-time %</th><th>Avg days</th><th>Avg review</th><th>Revenue</th></tr>' +
+  M.kpi_slowest_categories.map(r => '<tr><td>'+r.CategoryNameEnglish+'</td><td>'+r.OnTimePct.toFixed(1)+'</td><td>'+r.AvgDeliveryDays.toFixed(1)+'</td><td>'+r.AvgReview.toFixed(2)+'</td><td>'+r.Revenue.toFixed(0)+'</td></tr>').join('');
+</script>
+</body>
+</html>

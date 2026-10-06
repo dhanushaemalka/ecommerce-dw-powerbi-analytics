@@ -1,0 +1,148 @@
+table DimDate
+	lineageTag: b82213db-6622-49d4-88e8-0e25ec49760c
+
+	column DateKey
+		dataType: int64
+		isHidden
+		isKey
+		lineageTag: ec1ec519-694d-4c2e-bfe8-97086640e136
+		summarizeBy: none
+		sourceColumn: DateKey
+
+	column FullDate
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: e2d43ca4-7c9f-4bad-aa71-4ae987c9b4aa
+		dataCategory: Time
+		summarizeBy: none
+		sourceColumn: FullDate
+
+		variation Variation
+			isDefault
+			relationship: 4aac548e-43dc-4da4-9edd-fc50a3c23372
+			defaultHierarchy: LocalDateTable_ec6c7349-d9c4-49e5-9c87-5a4fb59ebd91.'Date Hierarchy'
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column DayNumber
+		dataType: int64
+		lineageTag: eb7f7593-9b1c-4506-a568-bb64df83b794
+		summarizeBy: sum
+		sourceColumn: DayNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayName
+		dataType: string
+		lineageTag: 93eb5a4c-67f7-40f9-a604-15767beeca1b
+		summarizeBy: none
+		sourceColumn: DayName
+		sortByColumn: DayNumber
+
+	column WeekdayFlag
+		dataType: string
+		lineageTag: 6681a93b-ca8d-461f-a2da-144423765fe6
+		summarizeBy: none
+		sourceColumn: WeekdayFlag
+
+	column WeekendFlag
+		dataType: string
+		lineageTag: ce8041c3-6014-49f0-82a8-65b01298cc32
+		summarizeBy: none
+		sourceColumn: WeekendFlag
+
+	column WeekOfYear
+		dataType: int64
+		lineageTag: 5378119d-5b69-4320-8e8f-cdc91b22c6a1
+		summarizeBy: sum
+		sourceColumn: WeekOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		dataType: int64
+		lineageTag: 61e6531f-9a1a-4679-80e8-dde3b217950a
+		summarizeBy: sum
+		sourceColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 7f3b83d1-d656-48d9-98cc-077e85894998
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthNumber
+
+	column QuarterNumber
+		dataType: int64
+		lineageTag: 7594d101-cd7d-4f45-bf8a-e72105ce645f
+		summarizeBy: sum
+		sourceColumn: QuarterNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterName
+		dataType: string
+		lineageTag: 83afcfd6-20f9-40f0-8651-69da813eaa75
+		summarizeBy: none
+		sourceColumn: QuarterName
+		sortByColumn: QuarterNumber
+
+	column YearNumber
+		dataType: int64
+		lineageTag: 486b88d3-20d2-472b-9fcc-e2f324c652fc
+		summarizeBy: sum
+		sourceColumn: YearNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearMonth
+		dataType: string
+		lineageTag: 63cd613d-b414-495b-99c2-a9ca7203b7b4
+		summarizeBy: none
+		sourceColumn: YearMonth
+
+	column IsHoliday
+		dataType: int64
+		lineageTag: eebc5b51-1dbd-4674-adeb-88ad21ea1eb1
+		summarizeBy: sum
+		sourceColumn: IsHoliday
+
+		annotation SummarizationSetBy = Automatic
+
+	column HolidayName
+		dataType: string
+		lineageTag: d9d9b0b3-2c07-437f-9480-58182fd29802
+		summarizeBy: none
+		sourceColumn: HolidayName
+
+	hierarchy Calendar
+		lineageTag: 5cf97e83-285f-4d64-9fbb-4e10c8e3c8d5
+
+		level Year
+			lineageTag: 0556c907-2fe3-46c5-8cec-b29ab086871e
+			column: YearNumber
+
+		level Quarter
+			lineageTag: 84e69693-116d-4669-8f42-6304cedf925f
+			column: QuarterName
+
+		level Month
+			lineageTag: 001bf0b4-8379-417a-8095-fb41f555cec2
+			column: MonthName
+
+		level Date
+			lineageTag: f93bbfac-0a36-4197-a78c-f1606e9879cf
+			column: FullDate
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/DimDate.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"DateKey", Int64.Type}, {"FullDate", type date}, {"DayNumber", Int64.Type}, {"DayName", type text}, {"WeekdayFlag", type text}, {"WeekendFlag", type text}, {"WeekOfYear", Int64.Type}, {"MonthNumber", Int64.Type}, {"MonthName", type text}, {"QuarterNumber", Int64.Type}, {"QuarterName", type text}, {"YearNumber", Int64.Type}, {"YearMonth", type text}, {"IsHoliday", Int64.Type}, {"HolidayName", type text}})
+					in
+					    ChangedType
+

@@ -1,0 +1,5 @@
+expression GoldFolder = "C:/Users/dhanu/Desktop/DWBI-PROJECT/DWBI-PRO-Complete/08_GoldLayer" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: f875d5bc-52d7-48d1-9be4-1f8e79897878
+
+	annotation PBI_ResultType = Text
+

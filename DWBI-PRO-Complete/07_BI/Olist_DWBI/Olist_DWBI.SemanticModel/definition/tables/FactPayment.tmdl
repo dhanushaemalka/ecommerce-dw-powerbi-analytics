@@ -1,0 +1,83 @@
+table FactPayment
+	lineageTag: d3c80373-b290-414c-bcde-627526f9936d
+
+	/// Sum of payment attempts
+	measure 'Payment Value' = SUM ( FactPayment[PaymentValue] )
+		formatString: $#,##0
+		lineageTag: 7f6fec63-9610-4fd3-a991-dd2621125147
+
+	/// Payment attempt rows
+	measure 'Payment Count' = COUNTROWS ( FactPayment )
+		formatString: #,##0
+		lineageTag: 4a5e782f-2762-4813-9d07-73eac6686b70
+
+	/// Mean installment count
+	measure 'Avg Installments' = AVERAGE ( FactPayment[PaymentInstallments] )
+		formatString: 0.0
+		lineageTag: 91168c9e-e694-4850-90fb-86f5132a910b
+
+	column PaymentKey
+		dataType: int64
+		isHidden
+		lineageTag: b4524b2d-2fc5-4aba-a788-cf2605ac731a
+		summarizeBy: none
+		sourceColumn: PaymentKey
+
+	column PurchaseDateKey
+		dataType: int64
+		isHidden
+		lineageTag: 0ce35599-7606-43eb-9284-38eb3f5aee5a
+		summarizeBy: none
+		sourceColumn: PurchaseDateKey
+
+	column CustomerKey
+		dataType: int64
+		isHidden
+		lineageTag: fbc1cfea-3343-4d8d-ae45-8fb454a8e34f
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+	column PaymentTypeKey
+		dataType: int64
+		isHidden
+		lineageTag: 943ee6e1-7e57-4fa9-ba4f-43962bd64aed
+		summarizeBy: none
+		sourceColumn: PaymentTypeKey
+
+	column OrderID
+		dataType: string
+		lineageTag: ebdb7167-ad20-4357-ae51-34341e82a9a5
+		summarizeBy: none
+		sourceColumn: OrderID
+
+	column PaymentSequential
+		dataType: int64
+		lineageTag: 85ed2bee-2aa1-41ab-913a-6c397ea6c2d3
+		summarizeBy: none
+		sourceColumn: PaymentSequential
+
+	column PaymentInstallments
+		dataType: int64
+		lineageTag: 78f065a1-197c-4b1c-b385-4e3fe673e588
+		summarizeBy: sum
+		sourceColumn: PaymentInstallments
+
+	column PaymentValue
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: c1501dfe-ab69-4e9b-9aa8-a56010b993b7
+		summarizeBy: sum
+		sourceColumn: PaymentValue
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactPayment = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/FactPayment.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"PaymentKey", Int64.Type}, {"PurchaseDateKey", Int64.Type}, {"CustomerKey", Int64.Type}, {"PaymentTypeKey", Int64.Type}, {"OrderID", type text}, {"PaymentSequential", Int64.Type}, {"PaymentInstallments", Int64.Type}, {"PaymentValue", type number}})
+					in
+					    ChangedType
+

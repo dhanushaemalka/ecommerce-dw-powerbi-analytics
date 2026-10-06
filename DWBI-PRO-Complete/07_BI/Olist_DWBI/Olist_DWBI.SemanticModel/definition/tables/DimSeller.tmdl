@@ -1,0 +1,57 @@
+table DimSeller
+	lineageTag: 77270403-96cd-4d77-b0df-1c985512d865
+
+	column SellerKey
+		dataType: int64
+		isHidden
+		lineageTag: 4e38088a-5c25-484e-b126-982b54184b9c
+		summarizeBy: none
+		sourceColumn: SellerKey
+
+	column SellerID
+		dataType: string
+		lineageTag: 906cdce0-c982-4049-89b0-33a1c43ef946
+		summarizeBy: none
+		sourceColumn: SellerID
+
+	column SellerCity
+		dataType: string
+		lineageTag: b5803df5-3bfb-42c8-9bc9-c29cf00ef559
+		summarizeBy: none
+		sourceColumn: SellerCity
+
+	column SellerState
+		dataType: string
+		lineageTag: 52e508ab-25a4-42d7-aa04-9509c425183f
+		summarizeBy: none
+		sourceColumn: SellerState
+
+	column SellerRegion
+		dataType: string
+		lineageTag: 4076ef63-f9b8-49b9-919a-019c15ed7c49
+		summarizeBy: none
+		sourceColumn: SellerRegion
+
+	column SellerZipPrefix
+		dataType: int64
+		lineageTag: ee0fbd6d-747c-4fdb-b13c-cb560fb2b7e5
+		summarizeBy: none
+		sourceColumn: SellerZipPrefix
+
+	column IsUnknown
+		dataType: int64
+		isHidden
+		lineageTag: 98b23a4b-28b9-44a4-ac7e-68fdef263048
+		summarizeBy: none
+		sourceColumn: IsUnknown
+
+	partition DimSeller = m
+		mode: import
+		source =
+				let
+					    Source = Csv.Document(File.Contents(GoldFolder & "/DimSeller.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					    ChangedType = Table.TransformColumnTypes(PromotedHeaders, {{"SellerKey", Int64.Type}, {"SellerID", type text}, {"SellerCity", type text}, {"SellerState", type text}, {"SellerRegion", type text}, {"SellerZipPrefix", Int64.Type}, {"IsUnknown", Int64.Type}})
+					in
+					    ChangedType
+
